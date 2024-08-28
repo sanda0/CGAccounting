@@ -1,0 +1,39 @@
+# Laravel specific files
+.env
+.env.*
+public/storage
+storage/*.key
+vendor/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+*.komodotools
+*.kate-swp
+*.kate-swp.*
+*.swp
+*.swo
+*.swp.*
+*~
+*.bak
+*.tmp
+*.tmp.*
+*.log
+*.log.*
+*.cscope.*
+*.tags.lock
+
+# Build and deployment files
+node_modules/
+npm-debug.log*
+yarn-error.log*
+yarn.lock
+package-lock.json
+composer.lock
+composer.phar
+composer-installer.php
+composer.phar.pubkeys
+composer.phar.sig

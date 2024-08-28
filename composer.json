@@ -1,0 +1,34 @@
+{
+	"name": "vendor/cgaccounting",
+	"type": "library",
+	"authors": [
+		{
+			"name": "sandakelum",
+			"email": "sandakelum.dev@gmail.com"
+		},
+		{
+			"name": "sameera",
+			"email": "sameera.xyz.me@gmail.com"
+		}
+	],
+	"minimum-stability": "dev",
+	"require": {
+		"php": "^7.3|^8.0",
+		"illuminate/database": "^8.0|^9.0|^10.0",
+		"illuminate/support": "^8.0|^9.0|^10.0",
+		"nesbot/carbon": "^2.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Vendor\\CGAccounting\\": "src/",
+			"CGA\\": "src/"
+		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Vendor\\CGAccounting\\CGAccountingServiceProvider"
+			]
+		}
+	}
+}
