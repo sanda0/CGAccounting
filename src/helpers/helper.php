@@ -1,7 +1,7 @@
 <?php
 
-use Vendor\CGAccounting\Models\Account;
-use Vendor\CGAccounting\Models\Record;
+use CodGlo\CGAccounting\Models\Account;
+use CodGlo\CGAccounting\Models\Record;
 
 /**
  * Transfer credit between accounts

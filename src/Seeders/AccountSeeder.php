@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendor\CGAccounting\Seeders;
+namespace CodGlo\CGAccounting\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

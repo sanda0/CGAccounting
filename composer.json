@@ -1,5 +1,5 @@
 {
-	"name": "vendor/cgaccounting",
+	"name": "CodGlo/cgaccounting",
 	"type": "library",
 	"authors": [
 		{
@@ -20,14 +20,14 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Vendor\\CGAccounting\\": "src/",
+			"CodGlo\\CGAccounting\\": "src/",
 			"CGA\\": "src/"
 		}
 	},
 	"extra": {
 		"laravel": {
 			"providers": [
-				"Vendor\\CGAccounting\\CGAccountingServiceProvider"
+				"CodGlo\\CGAccounting\\CGAccountingServiceProvider"
 			]
 		}
 	}

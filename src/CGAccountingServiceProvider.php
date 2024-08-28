@@ -1,6 +1,6 @@
 <?php
 
-namespace Vendor\CGAccounting;
+namespace CodGlo\CGAccounting;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -14,8 +14,10 @@ class CGAccountingServiceProvider extends ServiceProvider
     public function register()
     {
 
-			// Merges the configuration file 'config/config.php' into the 'xaccounting' configuration namespace.
-			// $this->mergeConfigFrom(__DIR__.'/config/config.php', 'xaccounting');
+
+        $this->app->singleton('accounting-service', function ($app) {
+            return new \CodGlo\CGAccounting\Services\AccountingService();
+        });
 
     }
 
@@ -26,11 +28,8 @@ class CGAccountingServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-			// Loads routes defined in 'routes.php' file.
-			// $this->loadRoutesFrom(__DIR__.'/routes.php');
 
-			// Automatically loads migrations from the 'migrations' directory.
-			$this->loadMigrationsFrom(__DIR__.'/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
 
 
     }
