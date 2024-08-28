@@ -30,5 +30,6 @@
 				"CodGlo\\CGAccounting\\CGAccountingServiceProvider"
 			]
 		}
-	}
+	},
+	 "license": "MIT"
 }
