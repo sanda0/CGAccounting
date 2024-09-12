@@ -21,9 +21,10 @@ class AccountingService
     public function credit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
         $from_account = Account::where('name', $facc)->first();
+        $to_account = Account::where('name', $tacc)->first();
 
-        if (!$from_account) {
-            return 'From Account not found';
+        if (!$from_account || !$to_account) {
+            return 'Accounts not found';
         }
 
         $from_account_id = $from_account->id;
@@ -36,7 +37,7 @@ class AccountingService
 
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
-            $new_entry->to_account = $tacc;
+            $new_entry->to_account = $to_account->id;
             $new_entry->debit = 0;
             $new_entry->credit = $amount;
             $new_entry->balance = $new_balance;
@@ -51,7 +52,7 @@ class AccountingService
 
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
-            $new_entry->to_account = $tacc;
+            $new_entry->to_account = $to_account->id;
             $new_entry->debit = 0;
             $new_entry->credit = $amount;
             $new_entry->balance = $new_balance;
@@ -80,9 +81,10 @@ class AccountingService
     public function debit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
         $from_account = Account::where('name', $facc)->first();
+        $to_account = Account::where('name', $tacc)->first();
 
-        if (!$from_account) {
-            return 'From Account not found';
+        if (!$from_account || !$to_account) {
+            return 'Accounts not found';
         }
 
         $from_account_id = $from_account->id;
@@ -95,7 +97,7 @@ class AccountingService
 
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
-            $new_entry->to_account = $tacc;
+            $new_entry->to_account = $to_account->id;
             $new_entry->debit = 0;
             $new_entry->credit = $amount;
             $new_entry->balance = $new_balance;
@@ -110,7 +112,7 @@ class AccountingService
 
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
-            $new_entry->to_account = $tacc;
+            $new_entry->to_account = $to_account->id;
             $new_entry->debit = 0;
             $new_entry->credit = $amount;
             $new_entry->balance = $new_balance;
