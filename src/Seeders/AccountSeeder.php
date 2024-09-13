@@ -283,6 +283,16 @@ class AccountSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+            [
+                "name" => "Sales Discount",
+                "type" => "expenses",
+                "parent_id" => $expensesId,
+                "ref_id" => null,
+                "ref_type" => null,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+
+            ]
         ]);
 
         // Enable foreign key checks

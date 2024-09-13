@@ -20,7 +20,8 @@
 		"php": "^7.3|^8.0",
 		"illuminate/database": "^8.0|^9.0|^10.0",
 		"illuminate/support": "^8.0|^9.0|^10.0",
-		"nesbot/carbon": "^2.0"
+		"nesbot/carbon": "^2.0",
+		"mpdf/mpdf": "dev-development"
 	},
 	"autoload": {
 		"psr-4": {
