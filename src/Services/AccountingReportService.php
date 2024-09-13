@@ -25,7 +25,7 @@ class AccountingReportService
     $this->companyEmail = $companyEmail;
   }
 
-  public function generateProfitAndLossReport($startDate, $endDate, $outputPath)
+  public function generateProfitAndLossReport($startDate, $endDate, $outputPath=null)
   {
     // Generate profit and loss report
     //incomes
