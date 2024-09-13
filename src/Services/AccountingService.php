@@ -98,8 +98,8 @@ class AccountingService
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
             $new_entry->to_account = $to_account->id;
-            $new_entry->debit = 0;
-            $new_entry->credit = $amount;
+            $new_entry->debit = $amount;
+            $new_entry->credit = 0;
             $new_entry->balance = $new_balance;
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;
@@ -113,8 +113,8 @@ class AccountingService
             $new_entry = new Record();
             $new_entry->from_account = $from_account_id;
             $new_entry->to_account = $to_account->id;
-            $new_entry->debit = 0;
-            $new_entry->credit = $amount;
+            $new_entry->debit = $amount;
+            $new_entry->credit = 0;
             $new_entry->balance = $new_balance;
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;

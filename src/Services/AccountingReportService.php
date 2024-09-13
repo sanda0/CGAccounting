@@ -22,6 +22,9 @@ class AccountingReportService
   
   public function generateProfiltAndLossReport($startDate, $endDate){
     // Generate profit and loss report
+    //incomes
+    //sales income 
+    
   }
   
 }
