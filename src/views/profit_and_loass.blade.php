@@ -16,9 +16,8 @@
 
         .bordered-header,
         .bordered-cols td {
-            border-left: 1px solid black;
-            border-right: 1px solid black;
-        }
+            border: 1px solid black;
+        } 
 
         .bordered-cols td:first-child {
             border-left: none;
@@ -49,6 +48,16 @@
             width: 80%;
             margin: 0 auto;
         }
+        .heading {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .sub-heading {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -57,7 +66,8 @@
 
 <body>
     <div class="container">
-        <h1>Profit and Loss {{ $startDate }} to {{ $startDate }}</h1>
+        <div class="heading">Profit and Loss</div>
+        <div class="sub-heading">2024-09-01 to 2024-09-30</div>
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td colspan="3">
