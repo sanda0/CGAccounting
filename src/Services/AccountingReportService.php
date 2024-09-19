@@ -128,7 +128,7 @@ class AccountingReportService
 
     $netProfit = $grossProfit - $totalExpenses;
 
-    $view = View::make('cgaccounting::profit_and_loass.blade.php', array(
+    $view = View::make('cgaccounting::profit_and_loass', array(
 
       'companyName' => $this->companyName,
       'companyAddress' => $this->companyAddress,
