@@ -185,4 +185,52 @@ class AccountingReportService
 
   }
 
+  public function generateCashFlow($startDate, $endDate, $outputPath = null)
+  {
+    $cashFlowData = DB::table('accpkg_entries as ae')
+      ->join('accpkg_accounts as aa', function ($join) {
+        $join->on('aa.id', '=', 'ae.from_account')
+             ->orOn('aa.id', '=', 'ae.to_account');
+      })
+      ->where('aa.name', 'Cash')
+      ->whereBetween('ae.created_at', [$startDate, $endDate])
+      ->select('aa.name', 'ae.*')
+      ->get();
+
+    $view = View::make('cgaccounting::cash_flow', array(
+        
+        'companyName' => $this->companyName,
+        'companyAddress' => $this->companyAddress,
+        'companyPhone' => $this->companyPhone,
+        'companyEmail' => $this->companyEmail,
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'cashFlowData' => $cashFlowData
+    ));
+
+    $html = $view->render();
+    $pathTmp = 'tmp/';
+    if (!Storage::exists($pathTmp)) {
+      Storage::makeDirectory($pathTmp);
+    }
+    $mpdf = new Mpdf(['tempDir' => $pathTmp, 'mode' => 'UTF-8', 'format' => 'A4-P', 'autoScriptToLang' => true, 'autoLangToFont' => true]);
+
+    $mpdf->WriteHTML($html);
+
+    $path = 'public/uploads/';
+    $fileName = "cash_flow_" . $startDate . '_' . $endDate . '.pdf';
+
+    if (!Storage::exists($path)) {
+      Storage::makeDirectory($path);
+    }
+
+    $fullPath = storage_path('app/' . $path . $fileName);
+    $mpdf->Output($fullPath, \Mpdf\Output\Destination::FILE);
+
+    // Generate file URL
+    $fileUrl = url('storage/uploads/' . $fileName);
+
+    return $fileUrl;
+  }
+
 }
