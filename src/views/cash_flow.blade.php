@@ -89,8 +89,8 @@
                 <tr class="bordered-cols">
                     <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('Y-m-d') }}</td>
                     <td>{{ $transaction->description }}</td>
-                    <td class="text-right">{{ $transaction->debit }}</td>
-                    <td class="text-right">{{ $transaction->credit }}</td>
+                    <td class="text-right">{{ $transaction->debit != 0 ? $transaction->debit : '' }}</td>
+                    <td class="text-right">{{ $transaction->credit != 0 ? $transaction->credit : '' }}</td>
                 </tr>
             @endforeach
 
