@@ -66,7 +66,7 @@
 
 <body>
     <div class="container">
-        <div class="heading">Profit and Loss</div>
+        <div class="heading">Cash Flow</div>
         <div class="sub-heading">2024-09-01 to 2024-09-30</div>
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
