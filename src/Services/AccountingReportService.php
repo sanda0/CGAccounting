@@ -189,8 +189,8 @@ class AccountingReportService
   {
     $cashFlowData = DB::table('accpkg_entries as ae')
       ->join('accpkg_accounts as aa', function ($join) {
-        $join->on('aa.id', '=', 'ae.from_account')
-             ->orOn('aa.id', '=', 'ae.to_account');
+        $join->on('aa.id', '=', 'ae.from_account');
+             
       })
       ->where('aa.name', 'Cash')
       ->whereBetween('ae.created_at', [$startDate, $endDate])
