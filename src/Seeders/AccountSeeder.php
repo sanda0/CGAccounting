@@ -85,6 +85,7 @@ class AccountSeeder extends Seeder
 
         // Detailed accounts for Assets
         $this->insertDetailedAccount('Cash', 'assets', $currentAssetsId);
+        $this->insertDetailedAccount('Bank', 'assets', $currentAssetsId);
         $this->insertDetailedAccount('Accounts Receivable', 'assets', $currentAssetsId);
         $this->insertDetailedAccount('Inventory', 'assets', $currentAssetsId);
         $this->insertDetailedAccount('Property, Plant, and Equipment', 'assets', $fixedAssetsId);
