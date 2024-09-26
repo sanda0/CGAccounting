@@ -15,4 +15,8 @@ class Account extends Model
         'name',
         'type',
     ];
+
+    public function balance(){
+        return Record::where('from_account',$this->id)->latest()->first()->balance;
+    }
 }
