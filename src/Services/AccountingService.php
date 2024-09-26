@@ -126,4 +126,8 @@ class AccountingService
 
         return 'Invalid account type';
     }
+
+    public function getAccount($name):Account{
+        return Account::where("name",$name)->first();
+    }
 }
