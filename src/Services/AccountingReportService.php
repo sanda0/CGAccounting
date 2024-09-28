@@ -234,7 +234,7 @@ class AccountingReportService
   }
 
 
-  public function generateBalanceSheet($toDate, $outPutPath)
+  public function generateBalanceSheet($toDate, $outPutPath = null)
   {
 
     $cash = DB::table('accpkg_entries as ae')
