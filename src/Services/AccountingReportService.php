@@ -237,44 +237,21 @@ class AccountingReportService
   public function generateBalanceSheet($toDate, $outPutPath = null)
   {
 
-    $cash = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Cash')
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    $currentAssetsAccount = Account::where('name', 'Current Assets')->first();
+    $currentAssetsAccounts = Account::where('parent_id', $currentAssetsAccount->id)->get();
+    $currentAssetsAcountBalances = [];
+    $totalCurrentAssets = 0;
+    foreach ($currentAssetsAccounts as $currentAssetsAccount) {
+      $currentAssetsAcountBalances[$currentAssetsAccount->name] =
+        DB::table('accpkg_entries as ae')
+          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+          ->where('aa.name', $currentAssetsAccount->name)
+          ->orderBy('ae.created_at', 'desc')
+          ->limit(1)
+          ->value('ae.balance');
+        $totalCurrentAssets += $currentAssetsAcountBalances[$currentAssetsAccount->name];
+    }
 
-    $back = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Bank')
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $accountsReceivableAccount = Account::where('name', 'Accounts Receivable')->first();
-    $accountsReceivable = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', function ($join) {
-        $join->on('aa.id', '=', 'ae.from_account')
-          ->where(function ($query) {
-            $query->where('ae.debit', '!=', 0)
-              ->orWhere('ae.credit', '!=', 0);
-          });
-      })
-      ->where('aa.parent_id', 12)
-      ->select(DB::raw('SUM(ae.balance) as balance'))
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('balance');
-
-
-    $inventory = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Inventory')
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $totalCurrentAssets = $cash + $back + $accountsReceivable + $inventory;
 
     $fixAssetsAcountBalances = [];
     $totalFixedAssets = 0;
@@ -349,20 +326,17 @@ class AccountingReportService
       'companyPhone' => $this->companyPhone,
       'companyEmail' => $this->companyEmail,
       'toDate' => $toDate,
-      'cash' => $cash,
-      'back' => $back,
-      'accountsReceivable' => $accountsReceivable,
-      'inventory' => $inventory,
+      'currentAssetsAcountBalances' => $currentAssetsAcountBalances, // key => value array,
       'totalCurrentAssets' => $totalCurrentAssets,
-      'fixAssetsAcountBalances' => $fixAssetsAcountBalances,
+      'fixAssetsAcountBalances' => $fixAssetsAcountBalances, // key => value array,
       'totalFixedAssets' => $totalFixedAssets,
       'totalAssets' => $totalAssets,
-      'currentLiabilitiesAcountBalances' => $currentLiabilitiesAcountBalances,
+      'currentLiabilitiesAcountBalances' => $currentLiabilitiesAcountBalances, // key => value array,
       'totalCurrentLiabilities' => $totalCurrentLiabilities,
-      'longTermLiabilitiesAcountBalances' => $longTermLiabilitiesAcountBalances,
+      'longTermLiabilitiesAcountBalances' => $longTermLiabilitiesAcountBalances, // key => value array,
       'totalLongTermLiabilities' => $totalLongTermLiabilities,
       'totalLiabilities' => $totalLiabilities,
-      'equityAcountBalances' => $equityAcountBalances,
+      'equityAcountBalances' => $equityAcountBalances, // key => value array,
       'totalEquity' => $totalEquity,
       'totalLiabilitiesAndEquity' => $totalLiabilitiesAndEquity
 
