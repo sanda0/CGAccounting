@@ -25,7 +25,7 @@ class AccountingReportService
     $this->companyEmail = $companyEmail;
   }
 
-  public function generateProfitAndLossReport($startDate, $endDate, $outputPath=null)
+  public function generateProfitAndLossReport($startDate, $endDate, $outputPath = null)
   {
     // Generate profit and loss report
     //incomes
@@ -190,7 +190,7 @@ class AccountingReportService
     $cashFlowData = DB::table('accpkg_entries as ae')
       ->join('accpkg_accounts as aa', function ($join) {
         $join->on('aa.id', '=', 'ae.from_account');
-             
+
       })
       ->where('aa.name', 'Cash')
       ->whereBetween('ae.created_at', [$startDate, $endDate])
@@ -198,14 +198,14 @@ class AccountingReportService
       ->get();
 
     $view = View::make('cgaccounting::cash_flow', array(
-        
-        'companyName' => $this->companyName,
-        'companyAddress' => $this->companyAddress,
-        'companyPhone' => $this->companyPhone,
-        'companyEmail' => $this->companyEmail,
-        'startDate' => $startDate,
-        'endDate' => $endDate,
-        'cashFlowData' => $cashFlowData
+
+      'companyName' => $this->companyName,
+      'companyAddress' => $this->companyAddress,
+      'companyPhone' => $this->companyPhone,
+      'companyEmail' => $this->companyEmail,
+      'startDate' => $startDate,
+      'endDate' => $endDate,
+      'cashFlowData' => $cashFlowData
     ));
 
     $html = $view->render();
@@ -219,6 +219,166 @@ class AccountingReportService
 
     $path = 'public/uploads/';
     $fileName = "cash_flow_" . $startDate . '_' . $endDate . '.pdf';
+
+    if (!Storage::exists($path)) {
+      Storage::makeDirectory($path);
+    }
+
+    $fullPath = storage_path('app/' . $path . $fileName);
+    $mpdf->Output($fullPath, \Mpdf\Output\Destination::FILE);
+
+    // Generate file URL
+    $fileUrl = url('storage/uploads/' . $fileName);
+
+    return $fileUrl;
+  }
+
+
+  public function generateBalanceSheet($toDate, $outPutPath)
+  {
+
+    $cash = DB::table('accpkg_entries as ae')
+      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+      ->where('aa.name', 'Cash')
+      ->orderBy('ae.created_at', 'desc')
+      ->limit(1)
+      ->value('ae.balance');
+
+    $back = DB::table('accpkg_entries as ae')
+      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+      ->where('aa.name', 'Bank')
+      ->orderBy('ae.created_at', 'desc')
+      ->limit(1)
+      ->value('ae.balance');
+
+    $accountsReceivableAccount = Account::where('name', 'Accounts Receivable')->first();
+    $accountsReceivable = DB::table('accpkg_entries as ae')
+      ->join('accpkg_accounts as aa', function ($join) {
+        $join->on('aa.id', '=', 'ae.from_account')
+          ->where(function ($query) {
+            $query->where('ae.debit', '!=', 0)
+              ->orWhere('ae.credit', '!=', 0);
+          });
+      })
+      ->where('aa.parent_id', 12)
+      ->select(DB::raw('SUM(ae.balance) as balance'))
+      ->orderBy('ae.created_at', 'desc')
+      ->limit(1)
+      ->value('balance');
+
+
+    $inventory = DB::table('accpkg_entries as ae')
+      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+      ->where('aa.name', 'Inventory')
+      ->orderBy('ae.created_at', 'desc')
+      ->limit(1)
+      ->value('ae.balance');
+
+    $totalCurrentAssets = $cash + $back + $accountsReceivable + $inventory;
+
+    $fixAssetsAcountBalances = [];
+    $totalFixedAssets = 0;
+    $fixedAssetsAccount = Account::where('name', 'Fixed Assets')->first();
+    $fixAssetsAccounts = Account::where('parent_id', $fixedAssetsAccount->id)->get();
+    foreach ($fixAssetsAccounts as $fixAssetsAccount) {
+      $fixAssetsAcountBalances[$fixAssetsAccount->name] =
+        DB::table('accpkg_entries as ae')
+          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+          ->where('aa.name', $fixAssetsAccount->name)
+          ->orderBy('ae.created_at', 'desc')
+          ->limit(1)
+          ->value('ae.balance');
+        $totalFixedAssets += $fixAssetsAcountBalances[$fixAssetsAccount->name];
+    }
+
+    $totalAssets = $totalCurrentAssets + $totalFixedAssets;
+
+    $currentLiabilitiesAccount = Account::where('name', 'Current Liabilities')->first();
+    $currentLiabilitiesAccounts = Account::where('parent_id', $currentLiabilitiesAccount->id)->get();
+    $currentLiabilitiesAcountBalances = [];
+    $totalCurrentLiabilities = 0;
+    foreach ($currentLiabilitiesAccounts as $currentLiabilitiesAccount) {
+      $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name] =
+        DB::table('accpkg_entries as ae')
+          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+          ->where('aa.name', $currentLiabilitiesAccount->name)
+          ->orderBy('ae.created_at', 'desc')
+          ->limit(1)
+          ->value('ae.balance');
+        $totalCurrentLiabilities += $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name];
+    }
+
+    $longTermLiabilitiesAccount = Account::where('name', 'Long-term Liabilities')->first();
+    $longTermLiabilitiesAccounts = Account::where('parent_id', $longTermLiabilitiesAccount->id)->get();
+    $longTermLiabilitiesAcountBalances = [];
+    $totalLongTermLiabilities = 0;
+    foreach ($longTermLiabilitiesAccounts as $longTermLiabilitiesAccount) {
+      $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name] =
+        DB::table('accpkg_entries as ae')
+          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+          ->where('aa.name', $longTermLiabilitiesAccount->name)
+          ->orderBy('ae.created_at', 'desc')
+          ->limit(1)
+          ->value('ae.balance');
+        $totalLongTermLiabilities += $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name];
+    }
+
+    $totalLiabilities = $totalCurrentLiabilities + $totalLongTermLiabilities;
+
+    $equityAccount = Account::where('name', 'Equity')->first();
+    $equityAccounts = Account::where('parent_id', $equityAccount->id)->get();
+    $equityAcountBalances = [];
+    $totalEquity = 0;
+    foreach ($equityAccounts as $equityAccount) {
+      $equityAcountBalances[$equityAccount->name] =
+        DB::table('accpkg_entries as ae')
+          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
+          ->where('aa.name', $equityAccount->name)
+          ->orderBy('ae.created_at', 'desc')
+          ->limit(1)
+          ->value('ae.balance');
+        $totalEquity += $equityAcountBalances[$equityAccount->name];
+    }
+
+    $totalLiabilitiesAndEquity = $totalLiabilities + $totalEquity;
+
+    $view = View::make('cgaccounting::balance_sheet', array(
+
+      'companyName' => $this->companyName,
+      'companyAddress' => $this->companyAddress,
+      'companyPhone' => $this->companyPhone,
+      'companyEmail' => $this->companyEmail,
+      'toDate' => $toDate,
+      'cash' => $cash,
+      'back' => $back,
+      'accountsReceivable' => $accountsReceivable,
+      'inventory' => $inventory,
+      'totalCurrentAssets' => $totalCurrentAssets,
+      'fixAssetsAcountBalances' => $fixAssetsAcountBalances,
+      'totalFixedAssets' => $totalFixedAssets,
+      'totalAssets' => $totalAssets,
+      'currentLiabilitiesAcountBalances' => $currentLiabilitiesAcountBalances,
+      'totalCurrentLiabilities' => $totalCurrentLiabilities,
+      'longTermLiabilitiesAcountBalances' => $longTermLiabilitiesAcountBalances,
+      'totalLongTermLiabilities' => $totalLongTermLiabilities,
+      'totalLiabilities' => $totalLiabilities,
+      'equityAcountBalances' => $equityAcountBalances,
+      'totalEquity' => $totalEquity,
+      'totalLiabilitiesAndEquity' => $totalLiabilitiesAndEquity
+
+    ));
+
+    $html = $view->render();
+    $pathTmp = 'tmp/';
+    if (!Storage::exists($pathTmp)) {
+      Storage::makeDirectory($pathTmp);
+    }
+    $mpdf = new Mpdf(['tempDir' => $pathTmp, 'mode' => 'UTF-8', 'format' => 'A4-P', 'autoScriptToLang' => true, 'autoLangToFont' => true]);
+
+    $mpdf->WriteHTML($html);
+
+    $path = 'public/uploads/';
+    $fileName = "balance_sheet_" . $toDate . '.pdf';
 
     if (!Storage::exists($path)) {
       Storage::makeDirectory($path);
