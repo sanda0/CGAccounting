@@ -16,7 +16,20 @@ class Account extends Model
         'type',
     ];
 
-    public function balance(){
-        return Record::where('from_account',$this->id)->latest()->first()->balance;
+    public function balance()
+    {
+        $childAccounts = Account::where('parent_id', $this->id)->get();
+        $balance = 0;
+        foreach ($childAccounts as $childAccount) {
+            $balance += $childAccount->balance();
+        }
+
+        $lastRecord = Record::where('from_account', $this->id)->latest()->first();
+        if ($lastRecord) {
+            $balance += $lastRecord->balance;
+        }
+
+        return $balance;
+
     }
 }
