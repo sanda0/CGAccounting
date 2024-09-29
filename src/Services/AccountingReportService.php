@@ -242,14 +242,8 @@ class AccountingReportService
     $currentAssetsAcountBalances = [];
     $totalCurrentAssets = 0;
     foreach ($currentAssetsAccounts as $currentAssetsAccount) {
-      $currentAssetsAcountBalances[$currentAssetsAccount->name] =
-        DB::table('accpkg_entries as ae')
-          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-          ->where('aa.name', $currentAssetsAccount->name)
-          ->orderBy('ae.created_at', 'desc')
-          ->limit(1)
-          ->value('ae.balance');
-        $totalCurrentAssets += $currentAssetsAcountBalances[$currentAssetsAccount->name];
+      $currentAssetsAcountBalances[$currentAssetsAccount->name] = $currentAssetsAccount->balance();
+      $totalCurrentAssets += $currentAssetsAcountBalances[$currentAssetsAccount->name];
     }
 
 
@@ -258,14 +252,8 @@ class AccountingReportService
     $fixedAssetsAccount = Account::where('name', 'Fixed Assets')->first();
     $fixAssetsAccounts = Account::where('parent_id', $fixedAssetsAccount->id)->get();
     foreach ($fixAssetsAccounts as $fixAssetsAccount) {
-      $fixAssetsAcountBalances[$fixAssetsAccount->name] =
-        DB::table('accpkg_entries as ae')
-          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-          ->where('aa.name', $fixAssetsAccount->name)
-          ->orderBy('ae.created_at', 'desc')
-          ->limit(1)
-          ->value('ae.balance');
-        $totalFixedAssets += $fixAssetsAcountBalances[$fixAssetsAccount->name];
+      $fixAssetsAcountBalances[$fixAssetsAccount->name] = $fixAssetsAccount->balance();
+      $totalFixedAssets += $fixAssetsAcountBalances[$fixAssetsAccount->name];
     }
 
     $totalAssets = $totalCurrentAssets + $totalFixedAssets;
@@ -275,14 +263,8 @@ class AccountingReportService
     $currentLiabilitiesAcountBalances = [];
     $totalCurrentLiabilities = 0;
     foreach ($currentLiabilitiesAccounts as $currentLiabilitiesAccount) {
-      $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name] =
-        DB::table('accpkg_entries as ae')
-          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-          ->where('aa.name', $currentLiabilitiesAccount->name)
-          ->orderBy('ae.created_at', 'desc')
-          ->limit(1)
-          ->value('ae.balance');
-        $totalCurrentLiabilities += $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name];
+      $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name] = $currentLiabilitiesAccount->balance();
+      $totalCurrentLiabilities += $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name];
     }
 
     $longTermLiabilitiesAccount = Account::where('name', 'Long-term Liabilities')->first();
@@ -290,14 +272,8 @@ class AccountingReportService
     $longTermLiabilitiesAcountBalances = [];
     $totalLongTermLiabilities = 0;
     foreach ($longTermLiabilitiesAccounts as $longTermLiabilitiesAccount) {
-      $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name] =
-        DB::table('accpkg_entries as ae')
-          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-          ->where('aa.name', $longTermLiabilitiesAccount->name)
-          ->orderBy('ae.created_at', 'desc')
-          ->limit(1)
-          ->value('ae.balance');
-        $totalLongTermLiabilities += $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name];
+      $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name] = $longTermLiabilitiesAccount->balance();
+      $totalLongTermLiabilities += $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name];
     }
 
     $totalLiabilities = $totalCurrentLiabilities + $totalLongTermLiabilities;
@@ -307,14 +283,8 @@ class AccountingReportService
     $equityAcountBalances = [];
     $totalEquity = 0;
     foreach ($equityAccounts as $equityAccount) {
-      $equityAcountBalances[$equityAccount->name] =
-        DB::table('accpkg_entries as ae')
-          ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-          ->where('aa.name', $equityAccount->name)
-          ->orderBy('ae.created_at', 'desc')
-          ->limit(1)
-          ->value('ae.balance');
-        $totalEquity += $equityAcountBalances[$equityAccount->name];
+      $equityAcountBalances[$equityAccount->name] = $equityAccount->balance();
+      $totalEquity += $equityAcountBalances[$equityAccount->name];
     }
 
     $totalLiabilitiesAndEquity = $totalLiabilities + $totalEquity;
