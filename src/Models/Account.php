@@ -24,7 +24,7 @@ class Account extends Model
             $balance += $childAccount->balance();
         }
 
-        $lastRecord = Record::where('from_account', $this->id)->latest()->first();
+        $lastRecord = Record::where('from_account', $this->id)->orderBy("id","desc")->first();
         if ($lastRecord) {
             $balance += $lastRecord->balance;
         }
