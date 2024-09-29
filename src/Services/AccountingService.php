@@ -20,6 +20,11 @@ class AccountingService
      */
     public function credit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
+
+        if($amount <= 0){
+            return 'Invalid amount';
+        }
+
         $from_account = Account::where('name', $facc)->first();
         $to_account = Account::where('name', $tacc)->first();
 
@@ -80,6 +85,10 @@ class AccountingService
      */
     public function debit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
+        if($amount <= 0){
+            return 'Invalid amount';
+        }
+
         $from_account = Account::where('name', $facc)->first();
         $to_account = Account::where('name', $tacc)->first();
 
