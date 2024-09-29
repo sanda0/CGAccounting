@@ -278,12 +278,21 @@ class AccountingReportService
 
     $totalLiabilities = $totalCurrentLiabilities + $totalLongTermLiabilities;
 
+    $income = Account::where('name', 'Income')->first();
+    $expenses = Account::where('name', 'Expenses')->first();
+
+    $netProfit = $income->balance($toDate) - $expenses->balance($toDate);
+
     $equityAccount = Account::where('name', 'Equity')->first();
     $equityAccounts = Account::where('parent_id', $equityAccount->id)->get();
     $equityAcountBalances = [];
     $totalEquity = 0;
     foreach ($equityAccounts as $equityAccount) {
+      if($equityAccount->name == 'Retained Earnings'){
+        $equityAcountBalances[$equityAccount->name] = $netProfit;
+      }else{
       $equityAcountBalances[$equityAccount->name] = $equityAccount->balance($toDate);
+      }
       $totalEquity += $equityAcountBalances[$equityAccount->name];
     }
 
