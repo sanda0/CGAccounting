@@ -21,7 +21,7 @@ class Account extends Model
         $childAccounts = Account::where('parent_id', $this->id)->get();
         $balance = 0;
         foreach ($childAccounts as $childAccount) {
-            $balance += $childAccount->balance();
+            $balance += $childAccount->balance($toDate);
         }
         if ($toDate) {
             $lastRecord = Record::where('from_account', $this->id)
