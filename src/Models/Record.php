@@ -27,11 +27,16 @@ class Record extends Model
     {
         parent::boot();
 
-        static::creating(function ($record) {
+        static::created(function ($record) {
             $fromAccount = Account::find($record->from_account);
             if ($fromAccount->parent_id != null) {
                 // $parentAccount = Account::find($fromAccount->parent_id);
-                $parentLastBalance = Record::where('from_account', $fromAccount->parent_id)->orderBy('id', 'desc')->first()->value('balance');
+                $parentRecord = Record::where('from_account', $fromAccount->parent_id)->orderBy('id', 'desc')->first();
+                if ($parentRecord) {
+                    $parentLastBalance = $parentRecord->balance;
+                } else {
+                    $parentLastBalance = 0;
+                }
                 if ($record->debit > 0) {
                     if ($fromAccount->type == "assets" || $fromAccount->type == "expenses") {
                         $new_balance = $parentLastBalance + $record->debit;
