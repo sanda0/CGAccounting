@@ -242,7 +242,7 @@ class AccountingReportService
     $currentAssetsAcountBalances = [];
     $totalCurrentAssets = 0;
     foreach ($currentAssetsAccounts as $currentAssetsAccount) {
-      $currentAssetsAcountBalances[$currentAssetsAccount->name] = $currentAssetsAccount->balance();
+      $currentAssetsAcountBalances[$currentAssetsAccount->name] = $currentAssetsAccount->balance($toDate);
       $totalCurrentAssets += $currentAssetsAcountBalances[$currentAssetsAccount->name];
     }
 
@@ -252,7 +252,7 @@ class AccountingReportService
     $fixedAssetsAccount = Account::where('name', 'Fixed Assets')->first();
     $fixAssetsAccounts = Account::where('parent_id', $fixedAssetsAccount->id)->get();
     foreach ($fixAssetsAccounts as $fixAssetsAccount) {
-      $fixAssetsAcountBalances[$fixAssetsAccount->name] = $fixAssetsAccount->balance();
+      $fixAssetsAcountBalances[$fixAssetsAccount->name] = $fixAssetsAccount->balance($toDate);
       $totalFixedAssets += $fixAssetsAcountBalances[$fixAssetsAccount->name];
     }
 
@@ -263,7 +263,7 @@ class AccountingReportService
     $currentLiabilitiesAcountBalances = [];
     $totalCurrentLiabilities = 0;
     foreach ($currentLiabilitiesAccounts as $currentLiabilitiesAccount) {
-      $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name] = $currentLiabilitiesAccount->balance();
+      $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name] = $currentLiabilitiesAccount->balance($toDate);
       $totalCurrentLiabilities += $currentLiabilitiesAcountBalances[$currentLiabilitiesAccount->name];
     }
 
@@ -272,7 +272,7 @@ class AccountingReportService
     $longTermLiabilitiesAcountBalances = [];
     $totalLongTermLiabilities = 0;
     foreach ($longTermLiabilitiesAccounts as $longTermLiabilitiesAccount) {
-      $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name] = $longTermLiabilitiesAccount->balance();
+      $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name] = $longTermLiabilitiesAccount->balance($toDate);
       $totalLongTermLiabilities += $longTermLiabilitiesAcountBalances[$longTermLiabilitiesAccount->name];
     }
 
@@ -283,7 +283,7 @@ class AccountingReportService
     $equityAcountBalances = [];
     $totalEquity = 0;
     foreach ($equityAccounts as $equityAccount) {
-      $equityAcountBalances[$equityAccount->name] = $equityAccount->balance();
+      $equityAcountBalances[$equityAccount->name] = $equityAccount->balance($toDate);
       $totalEquity += $equityAcountBalances[$equityAccount->name];
     }
 

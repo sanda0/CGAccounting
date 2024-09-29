@@ -16,15 +16,23 @@ class Account extends Model
         'type',
     ];
 
-    public function balance()
+    public function balance($toDate = null)
     {
         $childAccounts = Account::where('parent_id', $this->id)->get();
         $balance = 0;
         foreach ($childAccounts as $childAccount) {
             $balance += $childAccount->balance();
         }
-
-        $lastRecord = Record::where('from_account', $this->id)->orderBy("id","desc")->first();
+        if ($toDate) {
+            $lastRecord = Record::where('from_account', $this->id)
+                ->whereDate('created_at', '<=', $toDate)
+                ->orderBy("id", "desc")
+                ->first();
+        } else {
+            $lastRecord = Record::where('from_account', $this->id)
+                ->orderBy("id", "desc")
+                ->first();
+        }
         if ($lastRecord) {
             $balance += $lastRecord->balance;
         }
