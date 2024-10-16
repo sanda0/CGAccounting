@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profit and Loss 2024-09-01 to 2024-09-30</title>
+    <title>Profit and Loss {{ $startDate }} to {{ $endDate }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;

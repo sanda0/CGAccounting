@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profit and Loss 2024-09-01 to 2024-09-30</title>
+    <title>Cash {{ $startDate }} to {{ $endDate }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
         .bordered-header,
         .bordered-cols td {
             border: 1px solid black;
-        } 
+        }
 
         .bordered-cols td:first-child {
             border-left: none;
@@ -48,11 +48,13 @@
             width: 80%;
             margin: 0 auto;
         }
+
         .heading {
             font-size: 24px;
             font-weight: bold;
             text-align: center;
         }
+
         .sub-heading {
             font-size: 18px;
             font-weight: bold;
