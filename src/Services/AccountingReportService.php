@@ -25,106 +25,49 @@ class AccountingReportService
     $this->companyEmail = $companyEmail;
   }
 
-  public function generateProfitAndLossReport($startDate, $endDate, $outputPath = null)
+  //format pdf or html
+  public function generateProfitAndLossReport($startDate, $endDate, $outputPath = null, $format = 'pdf')
   {
     // Generate profit and loss report
     //incomes
     //sales income
-    $salesRevenue = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Sales Revenue')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
 
-    $serviceRevenue = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Service Revenue')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    $income = Account::where('name', 'Income')->first();
 
-    $otherIncome = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Other Income')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    $incomeAccountsBalances = [];
+    $totalIncome = 0;
+    $incomeAccounts = Account::where('parent_id', $income->id)->get();
 
-    $totalIncome = $salesRevenue + $serviceRevenue + $otherIncome;
+    foreach ($incomeAccounts as $incomeAccount) {
+      $incomeAccountsBalances[$incomeAccount->name] = $incomeAccount->balanceAtDateRange($startDate, $endDate);
+      $totalIncome += $incomeAccountsBalances[$incomeAccount->name];
+    }
+
+
 
     //expenses
-    $costOfGoodsSold = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Cost of Goods Sold')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    //Cost of Goods Sold
+    $costOfGoodsSold = Account::where('name', 'Cost of Goods Sold')->first()->balanceAtDateRange($startDate, $endDate);
 
     // gross profit
     $grossProfit = $totalIncome - $costOfGoodsSold;
 
-    $salariesExpense = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Salaries Expense')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    //other expenses account balances
+    $otherExpensesAccountBlances = [];
+    $totalExpenses = 0;
 
-    $rentExpense = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Rent Expense')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+    $expenses = Account::where('name', 'Expenses')->first();
+    $expensesAccounts = Account::where('parent_id', $expenses->id)
+      ->where('name', '!=', 'Cost of Goods Sold')
+      ->get();
+    
+    foreach ($expensesAccounts as $expensesAccount) {
+      $otherExpensesAccountBlances[$expensesAccount->name] = $expensesAccount->balanceAtDateRange($startDate, $endDate);
+      $totalExpenses += $otherExpensesAccountBlances[$expensesAccount->name];
+    }
 
-    $utilitiesExpense = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Utilities Expense')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
+  
 
-    $depreciationExpense = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Depreciation Expense')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $salesDiscount = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Sales Discount')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $salesReturnsAndAllowances = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Sales Returns and Allowances')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $otherExpenses = DB::table('accpkg_entries as ae')
-      ->join('accpkg_accounts as aa', 'aa.id', '=', 'ae.from_account')
-      ->where('aa.name', 'Other Expenses')
-      ->whereBetween('ae.created_at', [$startDate, $endDate])
-      ->orderBy('ae.created_at', 'desc')
-      ->limit(1)
-      ->value('ae.balance');
-
-    $totalExpenses = $salariesExpense + $rentExpense + $utilitiesExpense + $depreciationExpense + $salesDiscount + $salesReturnsAndAllowances + $otherExpenses;
 
     $netProfit = $grossProfit - $totalExpenses;
 
@@ -136,24 +79,21 @@ class AccountingReportService
       'companyEmail' => $this->companyEmail,
       'startDate' => $startDate,
       'endDate' => $endDate,
-      'salesRevenue' => $salesRevenue,
-      'serviceRevenue' => $serviceRevenue,
-      'otherIncome' => $otherIncome,
+      'incomeAccountsBalances' => $incomeAccountsBalances,
       'totalIncome' => $totalIncome,
       'costOfGoodsSold' => $costOfGoodsSold,
       'grossProfit' => $grossProfit,
-      'salariesExpense' => $salariesExpense,
-      'rentExpense' => $rentExpense,
-      'utilitiesExpense' => $utilitiesExpense,
-      'depreciationExpense' => $depreciationExpense,
-      'salesDiscount' => $salesDiscount,
-      'salesReturnsAndAllowances' => $salesReturnsAndAllowances,
-      'otherExpenses' => $otherExpenses,
+      'otherExpensesAccountBlances' => $otherExpensesAccountBlances,
       'totalExpenses' => $totalExpenses,
       'netProfit' => $netProfit
 
     ));
     $html = $view->render();
+
+    if ($format == 'html') {
+      return $html;
+    }
+
 
     $pathTmp = 'tmp/';
     if (!Storage::exists($pathTmp)) {
@@ -185,7 +125,7 @@ class AccountingReportService
 
   }
 
-  public function generateCashFlow($startDate, $endDate, $outputPath = null)
+  public function generateCashFlow($startDate, $endDate, $outputPath = null,$format = 'pdf')
   {
     $cashFlowData = DB::table('accpkg_entries as ae')
       ->join('accpkg_accounts as aa', function ($join) {
@@ -209,6 +149,11 @@ class AccountingReportService
     ));
 
     $html = $view->render();
+
+    if ($format == 'html') {
+      return $html;
+    }
+
     $pathTmp = 'tmp/';
     if (!Storage::exists($pathTmp)) {
       Storage::makeDirectory($pathTmp);
@@ -234,7 +179,7 @@ class AccountingReportService
   }
 
 
-  public function generateBalanceSheet($toDate, $outPutPath = null)
+  public function generateBalanceSheet($toDate, $outPutPath = null,$format = 'pdf')
   {
 
     $currentAssetsAccount = Account::where('name', 'Current Assets')->first();
@@ -288,10 +233,10 @@ class AccountingReportService
     $equityAcountBalances = [];
     $totalEquity = 0;
     foreach ($equityAccounts as $equityAccount) {
-      if($equityAccount->name == 'Retained Earnings'){
+      if ($equityAccount->name == 'Retained Earnings') {
         $equityAcountBalances[$equityAccount->name] = $netProfit;
-      }else{
-      $equityAcountBalances[$equityAccount->name] = $equityAccount->balance($toDate);
+      } else {
+        $equityAcountBalances[$equityAccount->name] = $equityAccount->balance($toDate);
       }
       $totalEquity += $equityAcountBalances[$equityAccount->name];
     }
@@ -322,6 +267,11 @@ class AccountingReportService
     ));
 
     $html = $view->render();
+
+    if ($format == 'html') {
+      return $html;
+    }
+
     $pathTmp = 'tmp/';
     if (!Storage::exists($pathTmp)) {
       Storage::makeDirectory($pathTmp);

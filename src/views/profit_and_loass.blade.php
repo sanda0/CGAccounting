@@ -17,7 +17,7 @@
         .bordered-header,
         .bordered-cols td {
             border: 1px solid black;
-        } 
+        }
 
         .bordered-cols td:first-child {
             border-left: none;
@@ -48,11 +48,13 @@
             width: 80%;
             margin: 0 auto;
         }
+
         .heading {
             font-size: 24px;
             font-weight: bold;
             text-align: center;
         }
+
         .sub-heading {
             font-size: 18px;
             font-weight: bold;
@@ -90,21 +92,14 @@
                 <td class="text-right"></td>
                 <td class="text-right"></td>
             </tr>
-            <tr class="bordered-cols">
-                <td class="indentx2"> Sales Revenue </td>
-                <td class="text-right"> {{ number_format($salesRevenue, 2) }} </td>
-                <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-                <td class="indentx2"> Service Revenue </td>
-                <td class="text-right"> {{ number_format($serviceRevenue, 2) }} </td>
-                <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-                <td class="indentx2"> Other Income </td>
-                <td class="text-right"> {{ number_format($otherIncome, 2) }} </td>
-                <td class="text-right"></td>
-            </tr>
+            @foreach ($incomeAccountsBalances as $key => $value)
+                <tr class="bordered-cols">
+                    <td class="indentx2"> {{ $key }} </td>
+                    <td class="text-right"> {{ number_format($value, 2) }} </td>
+                    <td class="text-right"></td>
+                </tr>
+            @endforeach
+
             <tr class="bordered-cols">
                 <td class="indentx1">
                     <h4>Total Income</h4>
@@ -118,7 +113,7 @@
                     <h4>Cost of Goods</h4>
                 </td>
                 <td class="text-right"></td>
-                <td class="text-right">{{ number_format($costOfGoodsSold,2) }}</td>
+                <td class="text-right">{{ number_format($costOfGoodsSold, 2) }}</td>
             </tr>
 
             <tr class="bordered-cols">
@@ -126,7 +121,7 @@
                     <h4>Gross Profit</h4>
                 </td>
                 <td class="text-right"></td>
-                <td class="text-right">{{ number_format($grossProfit,2) }}</td>
+                <td class="text-right">{{ number_format($grossProfit, 2) }}</td>
             </tr>
 
             <tr class="bordered-cols">
@@ -137,50 +132,20 @@
                 <td class="text-right"></td>
             </tr>
 
-            <tr class="bordered-cols">
-              <td class="indentx2">Salaries Expense </td>
-              <td class="text-right"> {{ number_format($salariesExpense, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-              <td class="indentx2">Rent Expense</td>
-              <td class="text-right"> {{ number_format($rentExpense, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-              <td class="indentx2">Utilities Expense</td>
-              <td class="text-right"> {{ number_format($utilitiesExpense, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-              <td class="indentx2">Depreciation Expense </td>
-              <td class="text-right"> {{ number_format($depreciationExpense, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-            <tr class="bordered-cols">
-              <td class="indentx2">Sales Discount </td>
-              <td class="text-right"> {{ number_format($salesDiscount, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
+            @foreach ($otherExpensesAccountBlances as $key => $value)
+                <tr class="bordered-cols">
+                    <td class="indentx2">{{ $key }}</td>
+                    <td class="text-right"> {{ number_format($value, 2) }} </td>
+                    <td class="text-right"></td>
+                </tr>
+            @endforeach
 
             <tr class="bordered-cols">
-              <td class="indentx2">Sales Returns and Allowances </td>
-              <td class="text-right"> {{ number_format($salesReturnsAndAllowances, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-
-            <tr class="bordered-cols">
-              <td class="indentx2">Other Expenses</td>
-              <td class="text-right"> {{ number_format($otherExpenses, 2) }} </td>
-              <td class="text-right"></td>
-            </tr>
-
-            <tr class="bordered-cols">
-              <td class="indentx1">
-                <h4>Total Expense</h4>
-              </td>
-              <td class="text-right"></td>
-              <td class="text-right"> {{ number_format($totalExpenses, 2) }} </td>
+                <td class="indentx1">
+                    <h4>Total Expense</h4>
+                </td>
+                <td class="text-right"></td>
+                <td class="text-right"> {{ number_format($totalExpenses, 2) }} </td>
             </tr>
 
             <tr class="bordered-cols">

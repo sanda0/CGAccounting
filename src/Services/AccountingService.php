@@ -7,7 +7,7 @@ use CodGlo\CGAccounting\Models\Record;
 
 class AccountingService
 {
-   /**
+    /**
      * Credit an amount to an account.
      *
      * @param  string  $facc  The from account identifier
@@ -21,7 +21,7 @@ class AccountingService
     public function credit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
 
-        if($amount <= 0){
+        if ($amount <= 0) {
             return 'Invalid amount';
         }
 
@@ -85,7 +85,7 @@ class AccountingService
      */
     public function debit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
     {
-        if($amount <= 0){
+        if ($amount <= 0) {
             return 'Invalid amount';
         }
 
@@ -136,7 +136,11 @@ class AccountingService
         return 'Invalid account type';
     }
 
-    public function getAccount($name):Account{
-        return Account::where("name",$name)->first();
+    public function getAccount($name): Account
+    {
+        return Account::where("name", $name)->first();
     }
+
+
+
 }

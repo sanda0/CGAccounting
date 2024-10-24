@@ -40,4 +40,22 @@ class Account extends Model
         return $balance;
 
     }
+
+    public function balanceAtDateRange($fromDate, $toDate)
+    {
+        $childAccounts = Account::where('parent_id', $this->id)->get();
+        $balance = 0;
+        foreach ($childAccounts as $childAccount) {
+            $balance += $childAccount->balanceAtDateRange($fromDate, $toDate);
+        }
+        $lastRecord = Record::where('from_account', $this->id)->
+            whereBetween('created_at', [$fromDate, $toDate])
+            ->orderBy("id", "desc")
+            ->first();
+        if ($lastRecord) {
+            $balance += $lastRecord->balance;
+        }
+
+        return $balance;
+    }
 }
