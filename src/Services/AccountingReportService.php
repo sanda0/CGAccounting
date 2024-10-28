@@ -110,6 +110,10 @@ class AccountingReportService
     $path = 'public/uploads/';
     $fileName = "profit_and_loss_" . $startDate . '_' . $endDate . '.pdf';
 
+    if (Storage::exists($path . $fileName)) {
+      Storage::delete($path . $fileName);
+    }
+
     if (!Storage::exists($path)) {
       Storage::makeDirectory($path);
     }
@@ -164,6 +168,10 @@ class AccountingReportService
 
     $path = 'public/uploads/';
     $fileName = "cash_flow_" . $startDate . '_' . $endDate . '.pdf';
+
+    if (Storage::exists($path . $fileName)) {
+      Storage::delete($path . $fileName);
+    }
 
     if (!Storage::exists($path)) {
       Storage::makeDirectory($path);
@@ -282,6 +290,10 @@ class AccountingReportService
 
     $path = 'public/uploads/';
     $fileName = "balance_sheet_" . $toDate . '.pdf';
+
+    if (Storage::exists($path . $fileName)) {
+      Storage::delete($path . $fileName);
+    }
 
     if (!Storage::exists($path)) {
       Storage::makeDirectory($path);
