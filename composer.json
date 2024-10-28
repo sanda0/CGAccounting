@@ -1,6 +1,9 @@
 {
 	"name": "cod-glo/cgaccounting",
 	"type": "library",
+	"description": "Accounting package for Laravel",
+	"keywords": ["accounting", "laravel", "package"],
+	"version": "1.0.0",
 	"authors": [
 		{
 			"name": "sandakelum",
