@@ -69,7 +69,7 @@
 <body>
     <div class="container">
         <div class="heading">Cash Flow</div>
-        <div class="sub-heading">2024-09-01 to 2024-09-30</div>
+        <div class="sub-heading">Cash {{ $startDate }} to {{ $endDate }}</div>
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
                 <td colspan="4">

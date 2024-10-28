@@ -108,7 +108,9 @@ class AccountingReportService
     // $pdfContent = $pdf->output();
 
     $path = 'public/uploads/';
-    $fileName = "profit_and_loss_" . $startDate . '_' . $endDate . '.pdf';
+  
+    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
+    $fileName = "profit_and_loss_" . $startDate . '_' . $endDate . '_' . $randomString . '.pdf';
 
     if (Storage::exists($path . $fileName)) {
       Storage::delete($path . $fileName);
@@ -167,7 +169,8 @@ class AccountingReportService
     $mpdf->WriteHTML($html);
 
     $path = 'public/uploads/';
-    $fileName = "cash_flow_" . $startDate . '_' . $endDate . '.pdf';
+    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
+    $fileName = "cash_flow_" . $startDate . '_' . $endDate .$randomString. '.pdf';
 
     if (Storage::exists($path . $fileName)) {
       Storage::delete($path . $fileName);
@@ -289,7 +292,8 @@ class AccountingReportService
     $mpdf->WriteHTML($html);
 
     $path = 'public/uploads/';
-    $fileName = "balance_sheet_" . $toDate . '.pdf';
+    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
+    $fileName = "balance_sheet_" . $toDate .$randomString. '.pdf';
 
     if (Storage::exists($path . $fileName)) {
       Storage::delete($path . $fileName);
