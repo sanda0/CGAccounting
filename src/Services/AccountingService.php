@@ -18,7 +18,7 @@ class AccountingService
      * @param  string|null  $description  Optional description of the transaction
      * @return bool|string Returns true if successful, otherwise an error message
      */
-    public function credit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
+    public function credit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null,$date = null)
     {
 
         if ($amount <= 0) {
@@ -49,6 +49,9 @@ class AccountingService
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;
             $new_entry->description = $description;
+            if($date){
+                $new_entry->created_at = $date;
+            }
             $new_entry->save();
 
             return true;
@@ -64,6 +67,9 @@ class AccountingService
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;
             $new_entry->description = $description;
+            if($date){
+                $new_entry->created_at = $date;
+            }
             $new_entry->save();
 
             return true;
@@ -83,7 +89,7 @@ class AccountingService
      * @param  string|null  $description  Optional description of the transaction
      * @return bool|string Returns true if successful, otherwise an error message
      */
-    public function debit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null)
+    public function debit($facc, $tacc, $amount, $ref_id = null, $ref_type = null, $description = null,$date = null)
     {
         if ($amount <= 0) {
             return 'Invalid amount';
@@ -113,6 +119,9 @@ class AccountingService
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;
             $new_entry->description = $description;
+            if($date){
+                $new_entry->created_at = $date;
+            }
             $new_entry->save();
 
             return true;
@@ -128,6 +137,9 @@ class AccountingService
             $new_entry->ref_id = $ref_id;
             $new_entry->ref_type = $ref_type;
             $new_entry->description = $description;
+            if($date){
+                $new_entry->created_at = $date;
+            }
             $new_entry->save();
 
             return true;
