@@ -60,13 +60,13 @@ class AccountingReportService
     $expensesAccounts = Account::where('parent_id', $expenses->id)
       ->where('name', '!=', 'Cost of Goods Sold')
       ->get();
-    
+
     foreach ($expensesAccounts as $expensesAccount) {
       $otherExpensesAccountBlances[$expensesAccount->name] = $expensesAccount->balanceAtDateRange($startDate, $endDate);
       $totalExpenses += $otherExpensesAccountBlances[$expensesAccount->name];
     }
 
-  
+
 
 
     $netProfit = $grossProfit - $totalExpenses;
@@ -108,8 +108,8 @@ class AccountingReportService
     // $pdfContent = $pdf->output();
 
     $path = 'public/uploads/';
-  
-    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
+
+    $randomString = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6 / strlen($x)))), 1, 6);
     $fileName = "profit_and_loss_" . $startDate . '_' . $endDate . '_' . $randomString . '.pdf';
 
     if (Storage::exists($path . $fileName)) {
@@ -131,7 +131,7 @@ class AccountingReportService
 
   }
 
-  public function generateCashFlow($startDate, $endDate, $outputPath = null,$format = 'pdf')
+  public function generateCashFlow($startDate, $endDate, $outputPath = null, $format = 'pdf')
   {
     $cashFlowData = DB::table('accpkg_entries as ae')
       ->join('accpkg_accounts as aa', function ($join) {
@@ -169,8 +169,8 @@ class AccountingReportService
     $mpdf->WriteHTML($html);
 
     $path = 'public/uploads/';
-    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
-    $fileName = "cash_flow_" . $startDate . '_' . $endDate .$randomString. '.pdf';
+    $randomString = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6 / strlen($x)))), 1, 6);
+    $fileName = "cash_flow_" . $startDate . '_' . $endDate . $randomString . '.pdf';
 
     if (Storage::exists($path . $fileName)) {
       Storage::delete($path . $fileName);
@@ -190,7 +190,7 @@ class AccountingReportService
   }
 
 
-  public function generateBalanceSheet($toDate, $outPutPath = null,$format = 'pdf')
+  public function generateBalanceSheet($toDate, $outPutPath = null, $format = 'pdf')
   {
 
     $currentAssetsAccount = Account::where('name', 'Current Assets')->first();
@@ -292,8 +292,8 @@ class AccountingReportService
     $mpdf->WriteHTML($html);
 
     $path = 'public/uploads/';
-    $randomString = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6/strlen($x)) )),1,6);
-    $fileName = "balance_sheet_" . $toDate .$randomString. '.pdf';
+    $randomString = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(6 / strlen($x)))), 1, 6);
+    $fileName = "balance_sheet_" . $toDate . $randomString . '.pdf';
 
     if (Storage::exists($path . $fileName)) {
       Storage::delete($path . $fileName);
@@ -310,6 +310,96 @@ class AccountingReportService
     $fileUrl = url('storage/uploads/' . $fileName);
 
     return $fileUrl;
+  }
+
+
+  public function generateTrialBalanceSheet($toDate, $outputPath = null, $format = 'pdf')
+  {
+
+    $debitSideAccounts = Account::whereIn('type', ['assets', 'expenses'])
+      ->where('parent_id', '=', null)
+      ->get();
+
+    $creditSideAccounts = Account::whereIn('type', ['liabilities', 'equity', 'income'])
+      ->where('parent_id', '=', null)
+      ->get();
+
+    $debitAccountsWithBalances = [];
+    $creditAccountsWithBalances = [];
+
+    foreach ($debitSideAccounts as $debitSideAccount) {
+      $childs = $debitSideAccount->children();
+      if ($childs->count() == 0) {
+        $debitAccountsWithBalances[$debitSideAccount->name] = $debitSideAccount->balance($toDate);
+      } else {
+        foreach ($childs as $child) {
+          $debitAccountsWithBalances[$child->name] = $child->balance($toDate);
+        }
+      }
+
+    }
+
+
+    foreach ($creditSideAccounts as $creditSideAccount) {
+      $childs = $creditSideAccount->children();
+      if ($childs->count() == 0) {
+        $creditAccountsWithBalances[$creditSideAccount->name] = $creditSideAccount->balance($toDate);
+      } else {
+        foreach ($childs as $child) {
+          $creditAccountsWithBalances[$child->name] = $child->balance($toDate);
+        }
+      }
+    }
+
+    $view = View::make('cgaccounting::trial_balance', array(
+
+      'companyName' => $this->companyName,
+      'companyAddress' => $this->companyAddress,
+      'companyPhone' => $this->companyPhone,
+      'companyEmail' => $this->companyEmail,
+      'toDate' => $toDate,
+      'debitAccountsWithBalances' => $debitAccountsWithBalances,
+      'creditAccountsWithBalances' => $creditAccountsWithBalances
+
+    ));
+
+    $html = $view->render();
+
+    if ($format == 'html') {
+      return $html;
+    }
+
+    $pathTmp = 'tmp/';
+    if (!Storage::exists($pathTmp)) {
+      Storage::makeDirectory($pathTmp);
+    }
+    $mpdf = new Mpdf(['tempDir' => $pathTmp, 'mode' => 'UTF-8', 'format' => 'A4-P', 'autoScriptToLang' => true, 'autoLangToFont' => true]);
+
+    $mpdf->WriteHTML($html);
+
+    $path = 'public/uploads/';
+    $randomString = bin2hex(random_bytes(3));
+    $fileName = "trial_balance_" . $toDate . $randomString . '.pdf';
+
+    if (Storage::exists($path . $fileName)) {
+      Storage::delete($path . $fileName);
+    }
+
+    if (!Storage::exists($path)) {
+      Storage::makeDirectory($path);
+    }
+
+    $fullPath = storage_path('app/' . $path . $fileName);
+
+    $mpdf->Output($fullPath, \Mpdf\Output\Destination::FILE);
+
+    // Generate file URL
+
+    $fileUrl = url('storage/uploads/' . $fileName);
+
+    return $fileUrl;
+
+
   }
 
 }
