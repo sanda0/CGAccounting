@@ -328,7 +328,9 @@ class AccountingReportService
     $creditAccountsWithBalances = [];
 
     foreach ($debitSideAccounts as $debitSideAccount) {
-      $childs = $debitSideAccount->children();
+
+      $childs = Account::where('parent_id', $debitSideAccount->id)->get();
+
       if ($childs->count() == 0) {
         $debitAccountsWithBalances[$debitSideAccount->name] = $debitSideAccount->balance($toDate);
       } else {
@@ -341,7 +343,8 @@ class AccountingReportService
 
 
     foreach ($creditSideAccounts as $creditSideAccount) {
-      $childs = $creditSideAccount->children();
+      $childs = Account::where('parent_id', $creditSideAccount->id)->get();
+
       if ($childs->count() == 0) {
         $creditAccountsWithBalances[$creditSideAccount->name] = $creditSideAccount->balance($toDate);
       } else {

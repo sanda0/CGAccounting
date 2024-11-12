@@ -95,7 +95,7 @@
                     $totalDebit += $amount;
                 @endphp
             @endforeach
-            @foreach ($creditAccountsWithBalances as $name => $amounts)
+            @foreach ($creditAccountsWithBalances as $name => $amount)
                 <tr class="bordered-cols">
                     <td> {{ $name }} </td>
                     <td class="text-right"> </td>
