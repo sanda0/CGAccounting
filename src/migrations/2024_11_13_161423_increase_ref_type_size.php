@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('accpkg_accounts', function (Blueprint $table) {
-            $table->string('ref_type', 25)->change();
+            $table->string('ref_type', 10)->nullable()->change();
         });
     }
 };
