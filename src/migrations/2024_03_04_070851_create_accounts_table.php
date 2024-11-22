@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
+
 class CreateAccountsTable extends Migration
 {
     use SoftDeletes;
@@ -19,12 +19,12 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->string("name")->unique();
             // assets, liabilities, equity, expenses, and income
-            if (DB::getDriverName() == 'sqlite') {
-                $table->string("type");
-            } else {
+            // if (DB::getDriverName() == 'sqlite') {
+            $table->string("type");
+            // } else {
 
-                $table->enum("type", ['assets', 'liabilities', 'equity', 'income', 'expenses']);
-            }
+            //     $table->enum("type", ['assets', 'liabilities', 'equity', 'income', 'expenses']);
+            // }
 
             $table->unsignedBigInteger("parent_id")->nullable();
             $table->integer("ref_id")->nullable();
