@@ -16,7 +16,7 @@ class AccountSeeder extends Seeder
     public function run()
     {
         // Disable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         // Parent accounts
         $assetsId = DB::table('accpkg_accounts')->where('name', 'Assets')->value('id');
@@ -116,7 +116,7 @@ class AccountSeeder extends Seeder
         $this->insertDetailedAccount('Other Expenses', 'expenses', $expensesId);
 
         // Enable foreign key checks
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     private function insertDetailedAccount($name, $type, $parentId)
