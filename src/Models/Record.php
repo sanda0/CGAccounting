@@ -22,6 +22,16 @@ class Record extends Model
         'description',
     ];
 
+    protected $connection;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        if (env('MULTI_TENANCY_ENABLED') !== null && env('MULTI_TENANCY_ENABLED') === true) {
+            $this->connection = 'sqlite_company';
+        }
+    }
 
     public function fromAccount()
     {
