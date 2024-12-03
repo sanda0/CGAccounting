@@ -3,7 +3,7 @@
 	"type": "library",
 	"description": "Accounting package for Laravel",
 	"keywords": ["accounting", "laravel", "package"],
-	"version": "1.0.17",
+	"version": "1.0.18",
 	"authors": [
 		{
 			"name": "sandakelum",
