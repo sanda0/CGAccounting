@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('cheques', function (Blueprint $table) {
-            $table->string('ref_type', 25)->nullable()->change();
-            $table->string('ref_id', 25)->nullable()->change();
+            $table->string('ref_type', 25)->nullable();
+            $table->string('ref_id', 25)->nullable();
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('cheques', function (Blueprint $table) {
-            $table->string('ref_type', 10)->nullable()->change();
-            $table->string('ref_id', 10)->nullable()->change();
+            $table->dropColumn('ref_type');
+            $table->dropColumn('ref_id');
         });
     }
 };
