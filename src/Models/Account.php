@@ -59,13 +59,21 @@ class Account extends Model
         foreach ($childAccounts as $childAccount) {
             $balance += $childAccount->balanceAtDateRange($fromDate, $toDate);
         }
-        $lastRecord = Record::where('from_account', $this->id)->
+        $credit = Record::where('from_account', $this->id)->
             whereBetween('created_at', [$fromDate, $toDate])
-            ->orderBy("id", "desc")
-            ->first();
-        if ($lastRecord) {
-            $balance += $lastRecord->balance;
+            ->sum("credit");
+        $debit = Record::where('from_account', $this->id)->
+            whereBetween('created_at', [$fromDate, $toDate])
+            ->sum("debit");
+        $account = Account::find($this->id);
+
+        if(in_array($account->type, ['asset', 'expense'])){
+            $balance = $debit - $credit;
+        }else{
+            $balance = $credit - $debit;
         }
+
+
 
         return $balance;
     }
