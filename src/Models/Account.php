@@ -67,7 +67,7 @@ class Account extends Model
             ->sum("debit");
         $account = Account::find($this->id);
 
-        if(in_array($account->type, ['asset', 'expense'])){
+        if(in_array($account->type, ['assets', 'expenses'])){
             $balance = $debit - $credit;
         }else{
             $balance = $credit - $debit;
