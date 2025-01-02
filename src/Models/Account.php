@@ -68,9 +68,9 @@ class Account extends Model
         $account = Account::find($this->id);
 
         if(in_array($account->type, ['assets', 'expenses'])){
-            $balance = $debit - $credit;
+            $balance = $balance + ($debit - $credit);
         }else{
-            $balance = $credit - $debit;
+            $balance = $balance +($credit - $debit);
         }
 
 
