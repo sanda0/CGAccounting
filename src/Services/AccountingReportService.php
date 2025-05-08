@@ -56,9 +56,10 @@ class AccountingReportService
     $otherExpensesAccountBlances = [];
     $totalExpenses = 0;
 
-    $expenses = Account::where('name', 'Expenses')->first();
-    $expensesAccounts = Account::where('parent_id', $expenses->id)
+    // $expenses = Account::where('name', 'Expenses')->first();
+    $expensesAccounts = Account::where('type', "expenses")
       ->where('name', '!=', 'Cost of Goods Sold')
+      ->whereDoesntHave('children')
       ->get();
 
     foreach ($expensesAccounts as $expensesAccount) {
@@ -316,43 +317,27 @@ class AccountingReportService
   public function generateTrialBalanceSheet($toDate, $outputPath = null, $format = 'pdf')
   {
 
-    $debitSideAccounts = Account::whereIn('type', ['assets', 'expenses'])
-      ->where('parent_id', '=', null)
-      ->get();
-
-    $creditSideAccounts = Account::whereIn('type', ['liabilities', 'equity', 'income'])
-      ->where('parent_id', '=', null)
+    $leafDebitAccounts = Account::whereIn('type', ['assets', 'expenses'])
+      ->whereDoesntHave('children') // Ensures we only get accounts with no children
       ->get();
 
     $debitAccountsWithBalances = [];
+    foreach ($leafDebitAccounts as $leafAccount) {
+      $debitAccountsWithBalances[$leafAccount->name] = $leafAccount->balance($toDate);
+    }
+
+
+
+
+    $leafCreditAccounts = Account::whereIn('type', ['liabilities', 'equity', 'income'])
+      ->whereDoesntHave('children')
+      ->get();
+
     $creditAccountsWithBalances = [];
-
-    foreach ($debitSideAccounts as $debitSideAccount) {
-
-      $childs = Account::where('parent_id', $debitSideAccount->id)->get();
-
-      if ($childs->count() == 0) {
-        $debitAccountsWithBalances[$debitSideAccount->name] = $debitSideAccount->balance($toDate);
-      } else {
-        foreach ($childs as $child) {
-          $debitAccountsWithBalances[$child->name] = $child->balance($toDate);
-        }
-      }
-
+    foreach ($leafCreditAccounts as $leafAccount) {
+      $creditAccountsWithBalances[$leafAccount->name] = $leafAccount->balance($toDate);
     }
 
-
-    foreach ($creditSideAccounts as $creditSideAccount) {
-      $childs = Account::where('parent_id', $creditSideAccount->id)->get();
-
-      if ($childs->count() == 0) {
-        $creditAccountsWithBalances[$creditSideAccount->name] = $creditSideAccount->balance($toDate);
-      } else {
-        foreach ($childs as $child) {
-          $creditAccountsWithBalances[$child->name] = $child->balance($toDate);
-        }
-      }
-    }
 
     $view = View::make('cgaccounting::trial_balance', array(
 

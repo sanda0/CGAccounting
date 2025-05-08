@@ -52,6 +52,11 @@ class Account extends Model
 
     }
 
+    public function hasChildAccounts(): bool
+    {
+        return $this->children()->exists();
+    }
+
     public function balanceAtDateRange($fromDate, $toDate)
     {
         $childAccounts = Account::where('parent_id', $this->id)->get();
