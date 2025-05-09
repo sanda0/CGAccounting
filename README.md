@@ -1,5 +1,19 @@
-
 # CGAccounting
+
+A Laravel package for handling accounting operations, including account management, transactions, and generating financial reports such as profit and loss, balance sheets, and cash flow statements. Easily manage credits, debits, and generate reports with a simple API.
+
+## Features
+
+- Account Management (Assets, Liabilities, Equity, Income, Expenses)
+- Transaction Processing (Credits and Debits)
+- Financial Report Generation
+  - Profit and Loss Statements
+  - Balance Sheets
+  - Cash Flow Statements
+  - Trial Balance Sheets
+- Database Migration and Seeding Support
+- Built-in Account Types and Structures
+- Flexible Transaction References and Descriptions
 
 ## Setup Instructions
 
@@ -17,31 +31,40 @@ To set up the database tables, run the migration commands:
 php artisan migrate
 ```
 
-This will create the required tables, such as `accpkg_accounts` and `accpkg_entries`.
+This will create the required tables:
+- `accpkg_accounts`: Stores account information and hierarchies
+- `accpkg_entries`: Records all transactions and balances
 
 ### 3. Run Account Seeder
 
-To seed the database with initial account data, run the seeder command:
+To seed the database with initial account data:
 
 ```sh
 php artisan db:seed --class=CodGlo\\CGAccounting\\Seeders\\AccountSeeder
 ```
 
-This command will populate the `accpkg_accounts` table with the necessary parent and sub-accounts.
+## Usage
 
-### Usage
+### AccountingService
 
-#### AccountingService
+The `AccountingService` class handles all transaction-related operations.
 
-The `AccountingService` class provides methods to handle accounting operations such as crediting and debiting accounts.
-
-##### Credit an Amount to an Account
+#### Credit Transaction
 
 ```php
 use CodGlo\CGAccounting\Services\AccountingService;
 
 $accountingService = new AccountingService();
-$result = $accountingService->credit('fromAccount', 'toAccount', 100.0, 'ref123', 'type1', 'Payment for services');
+$result = $accountingService->credit(
+    'fromAccount',    // Source account name
+    'toAccount',      // Destination account name
+    100.0,           // Amount
+    'ref123',        // Reference ID (optional)
+    'type1',         // Reference type (optional)
+    'Description',   // Transaction description (optional)
+    '2024-01-01'    // Transaction date (optional)
+);
+
 if ($result === true) {
     echo "Transaction successful!";
 } else {
@@ -49,60 +72,96 @@ if ($result === true) {
 }
 ```
 
-##### Debit an Amount from an Account
+#### Debit Transaction
 
 ```php
 use CodGlo\CGAccounting\Services\AccountingService;
 
 $accountingService = new AccountingService();
-$result = $accountingService->debit('fromAccount', 'toAccount', 50.0, 'ref456', 'type2', 'Refund for services');
-if ($result === true) {
-    echo "Transaction successful!";
-} else {
-    echo "Error: " . $result;
-}
+$result = $accountingService->debit(
+    'fromAccount',    // Source account name
+    'toAccount',      // Destination account name
+    50.0,            // Amount
+    'ref456',        // Reference ID (optional)
+    'type2',         // Reference type (optional)
+    'Refund'         // Transaction description (optional)
+);
 ```
 
-##### Get Account Details
+### AccountingReportService
 
-```php
-use CodGlo\CGAccounting\Services\AccountingService;
+Generate financial reports with customizable company information.
 
-$accountingService = new AccountingService();
-$account = $accountingService->getAccount('accountName');
-echo "Account ID: " . $account->id;
-```
-
-#### AccountingReportService
-
-The `AccountingReportService` class provides methods to generate various accounting reports.
-
-##### Generate Profit and Loss Report
+#### Initialize Report Service
 
 ```php
 use CodGlo\CGAccounting\Services\AccountingReportService;
 
-$reportService = new AccountingReportService('Company Name', 'Address', 'Phone', 'Email');
-$reportUrl = $reportService->generateProfitAndLossReport('2024-01-01', '2024-12-31');
-echo "Report URL: " . $reportUrl;
+$reportService = new AccountingReportService(
+    'Company Name',
+    'Company Address',
+    'Phone Number',
+    'Email Address'
+);
 ```
 
-##### Generate Cash Flow Report
+#### Generate Reports
 
+##### Profit and Loss Report
 ```php
-use CodGlo\CGAccounting\Services\AccountingReportService;
-
-$reportService = new AccountingReportService('Company Name', 'Address', 'Phone', 'Email');
-$reportUrl = $reportService->generateCashFlow('2024-01-01', '2024-12-31');
-echo "Report URL: " . $reportUrl;
+$reportUrl = $reportService->generateProfitAndLossReport(
+    '2024-01-01',    // Start date
+    '2024-12-31',    // End date
+    'output/path',   // Optional output path
+    'pdf'            // Optional format (pdf/html)
+);
 ```
 
-##### Generate Balance Sheet
-
+##### Cash Flow Report
 ```php
-use CodGlo\CGAccounting\Services\AccountingReportService;
-
-$reportService = new AccountingReportService('Company Name', 'Address', 'Phone', 'Email');
-$reportUrl = $reportService->generateBalanceSheet('2024-12-31');
-echo "Report URL: " . $reportUrl;
+$reportUrl = $reportService->generateCashFlow(
+    '2024-01-01',    // Start date
+    '2024-12-31'     // End date
+);
 ```
+
+##### Balance Sheet
+```php
+$reportUrl = $reportService->generateBalanceSheet(
+    '2024-12-31'     // As of date
+);
+```
+
+##### Trial Balance Sheet
+```php
+$reportUrl = $reportService->generateTrialBalanceSheet(
+    '2024-12-31',    // As of date
+    'output/path',   // Optional output path
+    'pdf'            // Optional format (pdf/html)
+);
+```
+
+## Account Types
+
+The package supports standard accounting types:
+- Assets
+- Liabilities
+- Equity
+- Income
+- Expenses
+
+## Error Handling
+
+The package includes validation for:
+- Invalid amounts (zero or negative)
+- Non-existent accounts
+- Invalid account types
+- Transaction constraints
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
