@@ -1,9 +1,9 @@
 {
-	"name": "cod-glo/cgaccounting",
+	"name": "cod-glo/cgaccounting-local",
 	"type": "library",
 	"description": "Accounting package for Laravel",
 	"keywords": ["accounting", "laravel", "package"],
-	"version": "1.0.22",
+	"version": "1.0.23",
 	"authors": [
 		{
 			"name": "sandakelum",
@@ -13,10 +13,11 @@
 	"minimum-stability": "stable",
 	"require": {
 		"php": "^7.3|^8.0",
-		"illuminate/database": "^8.0|^9.0|^10.0",
-		"illuminate/support": "^8.0|^9.0|^10.0",
-		"nesbot/carbon": "^2.0",
-		"mpdf/mpdf": "dev-development"
+		"illuminate/database": "^8.0|^9.0|^10.0|^11.0|^12.0",
+		"illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+		"nesbot/carbon": "^2.0|^3.0",
+		"mpdf/mpdf": "^8.2"
+	
 	},
 	"autoload": {
 		"psr-4": {

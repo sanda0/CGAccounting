@@ -154,5 +154,34 @@ class AccountingService
     }
 
 
+    public function getAccountTransactions($account_id, $start_date = null, $end_date = null, $perPage = 15)
+    {
+        $query = Record::where('from_account', $account_id);
+
+        if ($start_date) {
+            $query->where('created_at', '>=', $start_date);
+        }
+
+        if ($end_date) {
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        return $query->paginate($perPage);
+    }
+
+    public function getGeneralLedger($start_date = null, $end_date = null, $perPage = 15)
+    {
+        $query = Record::query();
+
+        if ($start_date) {
+            $query->where('created_at', '>=', $start_date);
+        }
+
+        if ($end_date) {
+            $query->where('created_at', '<=', $end_date);
+        }
+
+        return $query->paginate($perPage);
+    }
 
 }
