@@ -156,7 +156,8 @@ class AccountingService
 
     public function getAccountTransactions($account_id, $start_date = null, $end_date = null, $perPage = 15)
     {
-        $query = Record::where('from_account', $account_id);
+        $query = Record::with('fromAccount')->where('from_account', $account_id);
+        
 
         if ($start_date) {
             $query->where('created_at', '>=', $start_date);
@@ -171,7 +172,7 @@ class AccountingService
 
     public function getGeneralLedger($start_date = null, $end_date = null, $perPage = 15)
     {
-        $query = Record::query();
+        $query = Record::with('fromAccount');
 
         if ($start_date) {
             $query->where('created_at', '>=', $start_date);
