@@ -4,6 +4,7 @@ namespace CodGlo\CGAccounting\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Account extends Model
 {
@@ -29,27 +30,35 @@ class Account extends Model
 
     public function balance($toDate = null)
     {
-        $childAccounts = Account::where('parent_id', $this->id)->get();
         $balance = 0;
+
+        // 1. Recursively calculate balance for child accounts
+        $childAccounts = Account::where('parent_id', $this->id)->get();
         foreach ($childAccounts as $childAccount) {
             $balance += $childAccount->balance($toDate);
         }
+
+        // 2. Calculate this account's own contribution to the balance
+        $debitQuery = Record::where('from_account', $this->id);
+        $creditQuery = Record::where('to_account', $this->id);
+
         if ($toDate) {
-            $lastRecord = Record::where('from_account', $this->id)
-                ->whereDate('created_at', '<=', $toDate)
-                ->orderBy("id", "desc")
-                ->first();
-        } else {
-            $lastRecord = Record::where('from_account', $this->id)
-                ->orderBy("id", "desc")
-                ->first();
+            $endDate = Carbon::parse($toDate, 'UTC')->endOfDay();
+            $debitQuery->where('created_at', '<=', $endDate);
+            $creditQuery->where('created_at', '<=', $endDate);
         }
-        if ($lastRecord) {
-            $balance += $lastRecord->balance;
+
+        $accountDebit = $debitQuery->sum('debit');
+        $accountCredit = $creditQuery->sum('credit');
+
+        // 3. Apply account type specific logic
+        if (in_array($this->type, ['assets', 'expenses'])) {
+            $balance += ($accountDebit - $accountCredit);
+        } else {
+            $balance += ($accountCredit - $accountDebit);
         }
 
         return $balance;
-
     }
 
     public function hasChildAccounts(): bool
