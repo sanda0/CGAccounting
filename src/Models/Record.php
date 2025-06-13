@@ -20,6 +20,7 @@ class Record extends Model
         'ref_id',
         'ref_type',
         'description',
+        'record_number',
     ];
 
     protected $connection;

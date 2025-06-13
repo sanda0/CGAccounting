@@ -8,6 +8,17 @@ use CodGlo\CGAccounting\Models\Record;
 class AccountingService
 {
     /**
+     * Get the next record number by finding the maximum record number and adding 1
+     *
+     * @return int
+     */
+    private function getNextRecordNumber()
+    {
+        $maxRecordNumber = Record::max('record_number') ?? 0;
+        return $maxRecordNumber + 1;
+    }
+
+    /**
      * Credit an amount to an account.
      *
      * @param  string  $facc  The from account identifier
@@ -52,6 +63,7 @@ class AccountingService
             if($date){
                 $new_entry->created_at = $date;
             }
+            $new_entry->record_number = $this->getNextRecordNumber();
             $new_entry->save();
 
             return true;
@@ -70,6 +82,7 @@ class AccountingService
             if($date){
                 $new_entry->created_at = $date;
             }
+            $new_entry->record_number = $this->getNextRecordNumber();
             $new_entry->save();
 
             return true;
@@ -122,6 +135,7 @@ class AccountingService
             if($date){
                 $new_entry->created_at = $date;
             }
+            $new_entry->record_number = $this->getNextRecordNumber();
             $new_entry->save();
 
             return true;
@@ -140,6 +154,7 @@ class AccountingService
             if($date){
                 $new_entry->created_at = $date;
             }
+            $new_entry->record_number = $this->getNextRecordNumber();
             $new_entry->save();
 
             return true;
